@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /norobots/
+Allow: /
 
 Sitemap: https://sihyun10.github.io/sitemap.xml
