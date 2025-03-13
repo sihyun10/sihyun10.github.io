@@ -41,7 +41,7 @@ pin: true
 
 ### ERD 다이어그램 (프로그램의 db 구조)
 
-![erd 다이어그램](https://github.com/user-attachments/assets/5412fb09-4a3a-4579-acb3-9b59733ae650)
+![erd 다이어그램](/assets/img/erd_diagram.png)
 
 ---
 
@@ -169,12 +169,12 @@ image_paths.append(f"/static/article_image/{article_id}/{filename}")
 
 그렇다면, 글 작성페이지와 수정 페이지가 어떻게 화면 구현이 되어있는지 보여드리겠습니다.
 
-![write_page](https://github.com/user-attachments/assets/50ce604b-5b58-41b1-978d-ceee21e7be74)
+![write_page](/assets/img/write_page.jpg)   
 
 사용자가 글쓰기 버튼을 클릭해서 '글쓰기 페이지'로 들어오면 다음과 같은 화면이 보이게 됩니다.  
 이미지 첨부는 각각 하나씩 첨부해주어야합니다.
 
-![write_edit_page](https://github.com/user-attachments/assets/3c71bf0b-fab0-430d-913a-370a933114c5)
+![write_edit_page](/assets/img/write_edit.jpg)  
 
 사용자가 글을 쓰고 쓴 글을 수정할때, 보이는 '글쓰기 수정 페이지'인데요.  
 수정할 부분은 수정한 후, 수정완료 버튼을 누르게 되면 DB의 값도 수정되어 수정된 글로 잘 보이게 됩니다.
