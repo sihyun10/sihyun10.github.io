@@ -1,7 +1,7 @@
 ---
 title: "[크래프톤정글 0주차 회고] 이제부터 시작"
 date: 2025-03-13 22:53:00 +09:00
-categories: [Kraftonjungle]
+categories: [KraftonJungle]
 tags: [jungle]
 pin: true
 ---
