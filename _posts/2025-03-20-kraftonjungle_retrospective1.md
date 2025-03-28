@@ -171,7 +171,7 @@ key에 한가지의 비교 조건만 들어갈 수 있는데, 위 문제에서�
 
 작성되어져있지않다면 계속 재귀로 프로그램이 돌아가기 때문입니다. 그렇기 때문에 꼭 반드시 빠져나올 수 있는 코드가 작성되어져야합니다.
 
-![recursive_algorithm](https://github.com/user-attachments/assets/94454c88-7dc2-4509-b337-4c45ae9baa25)
+![recursive_algorithm](/assets/img/recursive_algorithm.jpeg)
 
 위의 그림과 같이 재귀함수에 대표적으로 **하노이 탑** 문제가 있습니다.  
 이 문제를 풀기위해 재귀함수 이해부터 문제 풀기까지 오래걸렸는데요..  
@@ -201,7 +201,7 @@ if (N <= 20):
   hanoi(N, 1, 2, 3)
 ```
 
-![hanoi_tower_algorithm](https://github.com/user-attachments/assets/9ed5a022-9add-4b12-9606-737783526f3f)
+![hanoi_tower_algorithm](/assets/img/hanoi_tower_algorithm.jpeg)
 
 이 하노이 탑의 규칙이 있다.
 
@@ -277,6 +277,6 @@ back()
 원래 잘 돌아가던 깃헙 블로그가 계속 에러가 나는거에요  
 구글링을 하며 나온 내용들로 여러가지 시도를 해보았지만, 계속 에러가 나서 이제 깃헙 블로그를 못쓰는건가? 했는데, 알고보니 `Dependabot` 이 친구가 알려줬더라구요. 이 친구가 알려준대로 하니까 다시 블로그가 잘 돌아가서 뿌듯했었습니다.
 
-![Github_blog](https://github.com/user-attachments/assets/1da7b3bd-eb43-40a9-bcdc-91fa1969bd35)
+![Github_blog](/assets/img/github_blog_error.jpg)
 
 (답을 모르겠던게 해결되어서 기분이 좋아졌거든요)
