@@ -1,7 +1,7 @@
 ---
 title: "[1주차 공부 키워드] 개념 정리"
 date: 2025-03-27 17:20:00 +09:00
-categories: [KraftonJungle]
+categories: [KraftonJungle, keyword]
 tags: [jungle]
 pin: true
 ---
