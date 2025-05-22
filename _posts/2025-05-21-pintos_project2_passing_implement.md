@@ -230,7 +230,7 @@ void argument_stack(char **argv, int argc, struct intr_frame *if_)
   // 1. 각 인자를 문자열 형태로 스택에 올림 (뒤에서부터)
   for (int i = argc - 1; i >= 0; i--)
   {
-    size_t len = strlen(argv[i]) + 1; // null 포함한 길이
+    size_t len = strlen(argv[i]) + 1; // \0 포함한 길이
     rsp -= len;
     memcpy(rsp, argv[i], len);
     arg_addresses[i] = rsp; // 이후 argv 배열 생성 시 주소 사용
@@ -277,7 +277,7 @@ void argument_stack(char **argv, int argc, struct intr_frame *if_)
 
 > 스택은 높은 주소에서 낮은 주소로 이동하며 삽입한다
 
-![user_stack](/assets/img/user_stack.jpg){:style="max-width: 80%; height: auto; border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![user_stack](/assets/img/user_stack.jpg){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 그림으로 나타내면 다음과 같다.
 
