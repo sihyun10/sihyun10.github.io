@@ -258,18 +258,14 @@ void argument_stack(char **argv, int argc, struct intr_frame *if_)
   // 4. argv 주소 (char **argv) 저장
   char **argv_addr = (char **)rsp;
 
-  // 5. argc 저장
-  rsp -= sizeof(int);
-  *(int *)rsp = argc;
-
-  // 6. return address (dummy 0)
+  // 5. return address (dummy 0) - fake address
   rsp -= sizeof(void *);
   *(void **)rsp = 0;
 
-  // 7. 최종 RSP 갱신
+  // 6. 최종 RSP 갱신
   if_->rsp = (uint64_t)rsp;
 
-  // 8. rdi = argc, rsi = argv 주소 설정
+  // 7. rdi = argc, rsi = argv 주소 설정
   if_->R.rdi = argc;
   if_->R.rsi = (uint64_t)argv_addr;
 }
@@ -330,6 +326,24 @@ void thread_test_preemption(void)
 현재 CPU가 인터럽트 컨텍스트일때, `thread_yield()`를 호출하면 시스템이 불안정해질 수 있기 때문이다.
 
 테스트 중에 이 부분이 없다면 스케줄링 요청이 잘못 발생하여 정상 실행이 되지 않기에 추가해주어야한다.
+
+```c
+// userprog/process.c/process_create_initd(const char *)
+tid_t process_create_initd(const char *file_name)
+{
+  //thread_create() 함수 호출 전에 file_name 세팅
+  char *save_ptr;
+  file_name = strtok_r(file_name, " ", &save_ptr);
+
+  /* Create a new thread to execute FILE_NAME. */
+  tid = thread_create(file_name, PRI_DEFAULT, initd, fn_copy);
+}
+```
+
+`file_name`은 파일 이름으로 인식되는 첫 단어가 필요하다.  
+`strtok_r()`로 분리를 해주지않으면 실행 파일을 제대로 찾지 못한다.  
+그러므로 `thread_create()`함수를 호출하기 전에 첫 번째 인자 `file_name`에  
+옳게 들어갈 수 있도록 분리한다!
 
 ---
 
