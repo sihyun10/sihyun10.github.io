@@ -83,7 +83,7 @@ void halt (void);
 ```c
 #include "threads/init.h" // power_off() 사용하기 위해
 
-static void halt(void)
+void halt(void)
 {
   power_off();
 }
@@ -112,57 +112,36 @@ void exit (int status);
 
 #### **[구현]**
 
-`exit()`는 현재 프로세스를 종료하고, 종료 상태(`status`)를 커널에 알려주는 시스템 콜이다.
-
-- 종료 상태 저장 : 현재 스레드의 `exit status`를 저장
-- 부모가 `wait` 중이라면 이 값을 전달할 수 있어야 한다
-- 종료 메시지 출력
-- 종료 : `thread_exit()` 호출
-
-먼저 구현하기 전에 `thread.h`파일에 전제 조건을 작성해두어야한다.
+`exit_status`를 `thread` 구조체에 필드로 추가해준다.  
+자식 프로세스가 종료된 뒤, 종료 상태를 부모 프로세스에게 알려야 하기 때문이다.
 
 ```c
-#include "threads/synch.h"
-
-struct thread
-{
+// include/threads/thread.h
+#ifdef USERPROG
+  /* Owned by userprog/process.c. */
+  uint64_t *pml4; /* Page map level 4 */
   int exit_status;
-  struct semaphore wait_sema; // 부모가 기다릴 수 있게 해주는 세마포어
-  bool has_exited;
-};
 ```
 
 ```c
-static void exit(int status)
+void exit(int status)
 {
   struct thread *curr = thread_current();
-
   curr->exit_status = status;
-  curr->has_exited = true;
-
-  printf("%s: exit(%d)\n", curr->name, status);
-
-  sema_up(&curr->wait_sema); // 부모가 wait() 중일 수 있으므로 깨운다
-
+  printf("%s: exit(%d)\n", curr->name, curr->exit_status);
   thread_exit();
 }
 ```
 
-- 현재 스레드의 종료 상태를 저장
-- `has_exited`를 `true`로 설정해 부모가 나중에 확인할 수 있도록 한다
-- 종료 메시지 출력
-- 부모가 만약 `wait()` 중일 수 있으므로, 깨워준다
-  - 그 이유는 자식이 `exit()`을 호출해도 그 사실을 부모가 알 수 있는 방법이 없어 부모는 무한 대기 상태가 될 수 있기 때문에, `sema_up()`을 호출하여 "나 끝났으니까 일어나"하며 부모를 깨워주어야한다
-- 현재 스레드(자식 프로세스) 종료
+현재 실행 중인 스레드(프로세스)를 가져온 후에  
+종료 상태 코드를 현재 스레드에 저장한다.  
+종료 로그 출력하고, 현재 스레드(프로세스)를 종료한다.
 
 ```c
 // syscall_handler()에 추가
   case SYS_EXIT:
-  {
-    int status = (int)f->R.rdi;
-    exit(status);
+    exit((int)f->R.rdi);
     break;
-  }
 ```
 
 ---
@@ -186,39 +165,27 @@ bool create (const char *file, unsigned initial_size);
 
 static void check_address(const void *addr)
 {
-  if (addr == NULL || !is_user_vaddr(addr))
+  if (is_kernel_vaddr(addr) || addr == NULL)
     exit(-1);
+
   if (pml4_get_page(thread_current()->pml4, addr) == NULL)
     exit(-1);
 }
 
-static void check_string(const char *str)
+bool create(const char *file, unsigned initial_size)
 {
-  while (true)
-  {
-    check_address(str);
-    if (*str == '\0')
-      break;
-    str++;
-  }
-}
-
-static bool create(const char *file, unsigned initial_size)
-{
-  check_string(file);
+  check_address(file);
   return filesys_create(file, initial_size);
 }
 ```
 
 `create()` 시스템 콜은 사용자 프로그램이 요청한 이름, 크기로 새로운 파일을 생성하는 기능이다.  
-`check_address()`와 `check_string()`으로 확인한 뒤, 파일을 생성한다.
+`check_address()`으로 확인한 뒤, 파일을 생성한다.
 
 - `check_address(const void *addr)`
+  - 커널 주소인지 체크
   - 주소가 NULL인지 체크
-  - 사용자 영역 주소인지 체크
   - 현재 프로세스의 페이지 테이블에 매핑되어있는지 확인
-- `check_string(const char *str)`
-  - 전체 문자열이 유효한 주소인지 검사
 
 ```c
 // syscall_handler()에 추가
@@ -226,6 +193,23 @@ static bool create(const char *file, unsigned initial_size)
     f->R.rax = create(f->R.rdi, f->R.rsi);
     break;
 ```
+
+#### (참고)
+
+```c
+int process_wait(tid_t child_tid UNUSED)
+{
+  for (int i = 0; i < 600000000; i++)
+  {
+  }
+  return -1;
+}
+```
+
+`500000000` ➔ `600000000`으로 숫자를 증가시켰다.  
+부모 프로세스가 자식 프로세스가 완전히 종료되기 전에 먼저 죽을 수 있기에  
+여유로운 시간을 제공해주어야하는데, `500000000`은 숫자가 적었나보다.  
+이렇게 바꿔주니 테스트 통과가 되었다.
 
 ---
 
@@ -249,12 +233,12 @@ bool remove (const char *file);
 > - 파일은 이름을 잃게 되고, 다른 프로세스는 더 이상 그 파일을 열 수 없게 된다
 > - 하지만 그 파일을 가리키는 모든 파일 디스크립터가 닫히거나, 시스템이 종료될 때까지,  
 >    해당 파일은 계속 존재한다
-{: .prompt-tip }
+>   {: .prompt-tip }
 
 #### **[구현]**
 
 ```c
-static bool remove(const char *file)
+bool remove(const char *file)
 {
   check_string(file);
   return filesys_remove(file);
