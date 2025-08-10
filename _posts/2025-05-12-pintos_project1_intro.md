@@ -3,7 +3,7 @@ title: "Pintos Project 1 : introduction"
 date: 2025-05-12 11:46:00 +09:00
 categories: [KraftonJungle]
 tags: [jungle]
-pin: true
+pin: false
 ---
 
 카이스트 핀토스 과제 : [Project 1 : introduction](https://casys-kaist.github.io/pintos-kaist/project1/introduction.html)  
