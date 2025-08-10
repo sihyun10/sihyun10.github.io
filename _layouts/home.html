@@ -5,43 +5,20 @@ refactor: true
 
 {% include lang.html %}
 
-{% assign pinned = site.posts | where: 'pin', 'true' %}
-{% assign default = site.posts | where_exp: 'item', 'item.pin != true and item.hidden != true' %}
+{% assign pinned_posts = site.posts | where: 'pin', true %}
+{% assign posts_per_page = site.paginate | default: 10 %}
 
-{% assign posts = '' | split: '' %}
-
-<!-- Get pinned posts -->
-
-{% assign offset = paginator.page | minus: 1 | times: paginator.per_page %}
-{% assign pinned_num = pinned.size | minus: offset %}
-
-{% if pinned_num > 0 %}
-  {% for i in (offset..pinned.size) limit: pinned_num %}
-    {% assign posts = posts | push: pinned[i] %}
-  {% endfor %}
-{% else %}
-  {% assign pinned_num = 0 %}
+{% assign total_pinned_pages = pinned_posts.size | divided_by: posts_per_page %}
+{% assign remainder = pinned_posts.size | modulo: posts_per_page %}
+{% if remainder > 0 %}
+  {% assign total_pinned_pages = total_pinned_pages | plus: 1 %}
 {% endif %}
 
-<!-- Get default posts -->
-
-{% assign default_beg = offset | minus: pinned.size %}
-
-{% if default_beg < 0 %}
-  {% assign default_beg = 0 %}
-{% endif %}
-
-{% assign default_num = paginator.posts | size | minus: pinned_num %}
-{% assign default_end = default_beg | plus: default_num | minus: 1 %}
-
-{% if default_num > 0 %}
-  {% for i in (default_beg..default_end) %}
-    {% assign posts = posts | push: default[i] %}
-  {% endfor %}
-{% endif %}
+{% assign current_page = paginator.page | default: 1 %}
+{% assign offset = current_page | minus: 1 | times: posts_per_page %}
 
 <div id="post-list" class="flex-grow-1 px-xl-1">
-  {% for post in paginator.posts %}
+  {% for post in pinned_posts limit: posts_per_page offset: offset %}
     <article class="card-wrapper card">
       <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
         {% assign card_body_col = '12' %}
@@ -113,6 +90,6 @@ refactor: true
 </div>
 <!-- #post-list -->
 
-{% if paginator.total_pages > 1 %}
-  {% include post-paginator.html %}
+{% if total_pinned_pages > 1 %}
+  {% include post-paginator.html total_pages=total_pinned_pages %}
 {% endif %}
