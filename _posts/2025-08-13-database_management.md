@@ -125,6 +125,99 @@ CREATE TABLE closet_avatar_item (
 
 <br>
 
+### 외래 키 제약조건 (FOREIGN KEY)
+
+데이터베이스에서 **외래 키 제약조건**은 두 테이블 사이에 **관계(Relationship)**를 설정해 주는 규칙이다.  
+쉽게 말해, "이 값은 반드시 저 테이블에 실제로 존재하는 값이어야한다."라는 약속을 만드는 것이다.
+
+**기본 문법**
+
+```
+CONSTRAINT [제약조건_이름]
+FOREIGN KEY ([자식_테이블_컬럼명])
+REFERENCES [부모_테이블명]([부모_테이블_컬럼명])
+[ON DELETE 옵션] [ON UPDATE 옵션]
+```
+
+#### 1. closet_avatar ➔ member
+
+```sql
+CREATE TABLE closet_avatar (
+    closet_avatar_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '아바타 ID',
+    user_id BIGINT NOT NULL COMMENT '회원 ID',
+    avatar_img VARCHAR(600) NOT NULL COMMENT '아바타 이미지 경로',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_avatar_member FOREIGN KEY (user_id)
+        REFERENCES member(user_id)
+);
+```
+
+- `fk_avatar_member` : `closet_avatar`의 `user_id`는 반드시 member 테이블에 존재하는 `user_id`여야 한다.
+- 즉, 존재하지 않는 회원 ID로는 아바타를 만들 수 없다.
+
+#### 2. closet_avatar_item ➔ closet_avatar, product
+
+```sql
+CREATE TABLE closet_avatar_item (
+    avatar_item_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '아바타 착용 아이템 ID',
+    closet_avatar_id BIGINT NOT NULL COMMENT '아바타 ID',
+    product_id BIGINT NOT NULL COMMENT '상품 ID',
+    CONSTRAINT fk_item_avatar FOREIGN KEY (closet_avatar_id)
+        REFERENCES closet_avatar(closet_avatar_id),
+    CONSTRAINT fk_item_product FOREIGN KEY (product_id)
+        REFERENCES product(product_id)
+);
+```
+
+- `fk_item_avatar` : `closet_avatar_item`의 `closet_avatar_id`는 반드시 `closet_avatar`에 존재해야한다.
+  - 없는 아바타에 아이템을 입히는 일은 불가능하기 때문이다.
+- `fk_item_product` : `product_id`는 반드시 product 테이블에 존재해야한다.
+  - 판매하지 않는 상품을 아바타에 착용시킬 수 없기 때문이다.
+
+#### [외래 키 제약조건의 핵심 역할]
+
+**1. 데이터 무결성 보장**  
+잘못된 참조(없는 회원, 없는 상품)를 사전에 차단해준다.
+
+**2. 관계 명확화**  
+테이블 간의 연결 구조를 ERD나 테이블 설계만 봐도 파악할 수 있다.
+
+**3. 삭제/변경 시 안정성**  
+부모 테이블 데이터가 삭제/변경될 때 자식 데이터 처리 방식을 `ON DELETE`, `ON UPDATE` 옵션으로 제어할 수 있다.
+
+#### **"ON DELETE / ON UPDATE" 옵션**
+
+외래 키에는 부모 테이블의 값이 바뀌거나 삭제될 때 자식 테이블에 어떤 동작을 할지 정할 수 있는 옵션이 있다.
+
+예시: `ON DELETE`
+
+```sql
+CONSTRAINT fk_item_product FOREIGN KEY (product_id)
+    REFERENCES product(product_id)
+    ON DELETE CASCADE
+```
+
+- CASCADE : 부모 데이터가 삭제되면 자식 데이터도 자동으로 삭제 ➔ 데이터 무결성 유지
+  - 예: 상품이 삭제되면, 그 상품을 착용한 아바타 아이템도 삭제
+- SET NULL : 부모 데이터가 삭제되면 자식 컬럼 값을 NULL로 변경
+  - 참조는 없어지지만 레코드(행)는 그대로 남음
+- RESTRICT / NO ACTION : 부모 데이터 삭제 불가 (기본값)
+
+예시 : `ON UPDATE`
+
+```sql
+CONSTRAINT fk_item_product FOREIGN KEY (product_id)
+    REFERENCES product(product_id)
+    ON UPDATE CASCADE
+```
+
+- CASCADE : 부모 키가 바뀌면 **자식 테이블의 값도** 자동 변경
+  - 예: 부모 테이블(product)의 product_id가 101 ➔ 200으로 바뀌면
+  - 자동으로 자식 테이블(closet_avatar_item)의 product_id 값도 200으로 바뀐다.
+- RESTRICT / NO ACTION : 부모 키 변경 불가 (기본값)
+
+<br>
+
 ### 3. 테이블 관계 구조
 
 - 회원(`member`) 1 -- N 아바타(`closet_avatar`)
