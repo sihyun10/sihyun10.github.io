@@ -19,12 +19,6 @@
     }
 
     constructor() {
-      // Set light as default for first-time visitors
-      if (!this.hasMode && !localStorage.getItem('chirpy-theme-initialized')) {
-        this.setLight();
-        localStorage.setItem('chirpy-theme-initialized', 'true');
-      }
-
       if (this.hasMode) {
         if (this.isDarkMode) {
           if (!this.isSysDarkPrefer) {
