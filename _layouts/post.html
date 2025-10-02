@@ -6,7 +6,6 @@ panel_includes:
 tail_includes:
   - related-posts
   - post-nav
-  - comments
 ---
 
 {% include lang.html %}
@@ -138,10 +137,4 @@ tail_includes:
   <!-- div.post-tail-wrapper -->
 </article>
 
-<script src="https://utteranc.es/client.js"
-        repo="sihyun10/sihyun10.github.io"
-        issue-term="pathname"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-</script>
+{% include comments.html %}
