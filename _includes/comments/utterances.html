@@ -2,31 +2,45 @@
 <div id="utterances"></div>
 
 <script type="text/javascript">
-  document.addEventListener('DOMContentLoaded', function () {
+  (function () {
     const origin = 'https://utteranc.es';
     const lightTheme = 'github-light';
     const darkTheme = 'github-dark';
-    let initTheme = lightTheme;
     const html = document.documentElement;
 
-    // 초기 테마 결정
-    if (
-      (html.hasAttribute('data-mode') && html.getAttribute('data-mode') === 'dark') ||
-      (!html.hasAttribute('data-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      initTheme = darkTheme;
+    function insertUtterances() {
+      let initTheme = lightTheme;
+
+      // 초기 테마 결정
+      if (
+        (html.hasAttribute('data-mode') && html.getAttribute('data-mode') === 'dark') ||
+        (!html.hasAttribute('data-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        initTheme = darkTheme;
+      }
+
+      // 기존 iframe 제거 (재삽입 시 문제 방지)
+      const existing = document.querySelector('iframe.utterances-frame');
+      if (existing) existing.remove();
+
+      // utterances 스크립트 생성
+      const s = document.createElement('script');
+      s.src = 'https://utteranc.es/client.js';
+      s.setAttribute('repo', '{{ site.comments.utterances.repo }}');
+      s.setAttribute('issue-term', '{{ site.comments.utterances.issue_term }}');
+      s.setAttribute('theme', initTheme);
+      s.setAttribute('crossorigin', 'anonymous');
+      s.async = true;
+
+      document.getElementById('utterances').appendChild(s);
     }
 
-    // utterances script 생성 및 삽입
-    let s = document.createElement('script');
-    s.src = 'https://utteranc.es/client.js';
-    s.setAttribute('repo', '{{ site.comments.utterances.repo }}');
-    s.setAttribute('issue-term', '{{ site.comments.utterances.issue_term }}');
-    s.setAttribute('theme', initTheme);
-    s.setAttribute('crossorigin', 'anonymous');
-    s.async = true;
-
-    document.getElementById('utterances').appendChild(s);
+    // DOM 준비 시 실행
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', insertUtterances);
+    } else {
+      insertUtterances();
+    }
 
     // 다크모드 전환 이벤트 처리
     window.addEventListener('message', (event) => {
@@ -38,5 +52,5 @@
         }
       }
     });
-  });
+  })();
 </script>
