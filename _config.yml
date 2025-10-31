@@ -122,6 +122,8 @@ pwa:
 
 plugins:
   - jekyll-paginate
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
 paginate: 10
 paginate_path: "/page/:num"
