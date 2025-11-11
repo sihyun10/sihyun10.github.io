@@ -112,4 +112,4 @@ pin: false
 
 <br>
 
-![infinite_challenge_meme](/assets/img/open_mission/뭐가%20됐든%20되든%20안%20되든%20최선을%20다해서%20끝까지.jpeg)
+![infinite_challenge_meme](/assets/img/open_mission/infinite_challenge_meme.jpeg)
