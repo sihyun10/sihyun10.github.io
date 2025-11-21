@@ -107,6 +107,63 @@ Spring Boot는 `@Valid`를 통해 검증 실패 시 **자동으로** `400 Bad Re
 
 ---
 
+## Postman으로 성공 케이스 테스트해보기
+
+Postman을 사용하여 "구독"과 "구독 취소"가 잘 작동하는지 확인해보았다.
+
+> (참고) 테스트할 땐, 스케줄러 시간을 40초 단위로 실행되게끔 설정해두었다.
+
+### 구독 요청 (성공 예시)
+
+- URL
+
+```
+POST http://localhost:8080/api/subscriptions
+```
+
+- Body > raw > JSON
+
+```json
+{
+  "email": "test@example.com"
+}
+```
+
+**결과**
+
+- 상태 코드 : 200 OK
+- 응답 메시지: `구독이 성공적으로 처리되었습니다.`
+
+![subscription_success](/assets/img/open_mission/subscription_success.png)  
+![subscription_success_send](/assets/img/open_mission/subscription_success_send.png)
+
+### (기존 구독자) 구독 취소 요청 (성공 예시)
+
+- URL
+
+```
+POST http://localhost:8080/api/subscriptions/unsubscribe
+```
+
+- Body > raw > JSON
+
+```json
+{
+  "email": "test@example.com"
+}
+```
+
+**결과**
+
+- 상태 코드 : 200 OK
+- 응답 메시지 : `구독이 성공적으로 취소되었습니다.`
+
+![subscription_cancel](/assets/img/open_mission/subscription_cancel.png)  
+![postman_subscription_cancel](/assets/img/open_mission/postman_subscription_cancel.png)  
+![subscription_cancel(1)](</assets/img/open_mission/subscription_cancel(1).png>)
+
+---
+
 ## Postman으로 실패 케이스 테스트해보기
 
 Postman을 사용하여 유효성 검증이 올바르게 작동하는지 확인했다.
@@ -222,6 +279,23 @@ public class SubscriptionService {
 
 또한 구독하지 않은 사용자의 취소 요청은 실제 시스템에 영향을 주지 않는다.  
 요청 이메일이 DB에 존재하고 활성 상태일 경우에만 `active = false` 처리가 되므로, 존재하지 않는 이메일의 요청은 아무 변화 없이 종료된다. 따라서 사용자에게는 `"취소 처리가 완료되었다"`는 통일된 응답을 제공하는 것이 서비스의 안정성과 보안 측면에서 좋다고 생각했다.
+
+---
+
+## 마무리하며
+
+구독/구독 취소 API를 구현한 뒤, 실제로 Postman으로 요청을 보내보고, 스케줄러가 돌아가며 뉴스레터를 전송하는 흐름을 직접 확인해볼 수 있었다.
+
+배운 점은 다음과 같다.
+
+- Spring Boot의 유효성 검증만으로도 데이터 검증을 깔끔하게 처리할 수 있다
+- 실제로 API 통신을 해보며 서비스 흐름을 검증하는 과정
+- 사용자가 구독한 순간부터 다음 스케줄링 사이클에 맞춰 뉴스레터가 정상적으로 발송되는지 직접 확인함으로써, 구독 시점과 스케줄러의 동작이 어떻게 맞물려 동작하는지 이해하였다.
+- 존재하지 않는 이메일의 구독 취소 요청에 대해 통일된 성공 응답을 주는 것이 적합한지 고민해보았다.
+
+실제 서비스처럼 동작하는 과정을 보니 전체적으로 어떻게 동작하는지 더 이해가 잘 되는 느낌이었다.
+
+특히 구독 시점에 따라 이메일이 바로 보내지는 게 아닌, 다음 스케줄 시간에 맞춰 함께 발송되는 구조를 실제로 확인할 수 있어 좋았다.
 
 ---
 
