@@ -21,3 +21,6 @@ package-lock.json
 *.map
 sw.min.js
 # assets/js/dist
+
+# macOs
+**/.DS_Store
