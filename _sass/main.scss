@@ -11,3 +11,19 @@
 @import 'layout/archives';
 @import 'layout/categories';
 @import 'layout/category-tag';
+
+/* Custom styles for details and summary tags */
+.content details {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: #f6f8fa;
+  color: #24292e;
+  margin-bottom: 1rem;
+}
+
+.content summary {
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
