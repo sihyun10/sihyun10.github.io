@@ -14,11 +14,11 @@
 
 /* Custom styles for details and summary tags */
 .content details {
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 20px;
-  background-color: #f6f8fa;
-  color: #24292e;
+  padding: 15px;
+  background-color: var(--main-wrapper-bg);
+  color: var(--text-color);
   margin-bottom: 1rem;
 }
 
