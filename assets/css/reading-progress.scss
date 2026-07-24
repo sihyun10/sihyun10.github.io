@@ -1,0 +1,28 @@
+---
+---
+
+/* Reading Progress Bar - Post layout only */
+#reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  z-index: 9999;
+  transition: width 0.1s linear;
+
+  /* 라이트 모드 기본값 */
+  background-color: #89c8cf;
+}
+
+/* Chirpy 다크모드: html[data-mode="dark"] */
+html[data-mode='dark'] #reading-progress-bar {
+  background-color: #a6dde2;
+}
+
+/* 시스템 다크모드 fallback (data-mode 미지정 시) */
+@media (prefers-color-scheme: dark) {
+  html:not([data-mode='light']) #reading-progress-bar {
+    background-color: #a6dde2;
+  }
+}
