@@ -29,6 +29,7 @@
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 
   // 페이지 진입 시 초기값 설정
   updateProgress();
