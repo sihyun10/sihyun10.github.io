@@ -1,4 +1,4 @@
-<!-- Switch the mode between dark and light. -->
+<!-- Switch the mode between dark, light, and system. -->
 
 <script type="text/javascript">
   class ModeToggle {
@@ -33,7 +33,7 @@
 
       let self = this;
 
-      /* always follow the system prefers */
+      /* always follow the system prefers when no explicit mode is set */
       this.sysDarkPrefers.addEventListener('change', () => {
         if (self.hasMode) {
           if (self.isDarkMode) {
@@ -45,13 +45,11 @@
               self.setLight();
             }
           }
-
           self.clearMode();
         }
-
         self.notify();
       });
-    } /* constructor() */
+    }
 
     get sysDarkPrefers() {
       return window.matchMedia('(prefers-color-scheme: dark)');
@@ -77,7 +75,6 @@
       return sessionStorage.getItem(ModeToggle.MODE_KEY);
     }
 
-    /* get the current mode on screen */
     get modeStatus() {
       if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) {
         return ModeToggle.DARK_MODE;
@@ -101,7 +98,6 @@
       sessionStorage.removeItem(ModeToggle.MODE_KEY);
     }
 
-    /* Notify another plugins that the theme mode has changed */
     notify() {
       window.postMessage(
         {
@@ -112,6 +108,19 @@
       );
     }
 
+    /* Set a specific mode: 'dark' | 'light' | 'system' */
+    setMode(mode) {
+      if (mode === 'dark') {
+        this.setDark();
+      } else if (mode === 'light') {
+        this.setLight();
+      } else {
+        this.clearMode(); /* system: follow OS preference */
+      }
+      this.notify();
+    }
+
+    /* Legacy flipMode kept for compatibility */
     flipMode() {
       if (this.hasMode) {
         if (this.isSysDarkPrefer) {
@@ -134,10 +143,9 @@
           this.setDark();
         }
       }
-
       this.notify();
-    } /* flipMode() */
-  } /* ModeToggle */
+    }
+  }
 
   const modeToggle = new ModeToggle();
 </script>

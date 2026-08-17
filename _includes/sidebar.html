@@ -44,9 +44,137 @@
 
   <div class="sidebar-bottom d-flex flex-wrap  align-items-center w-100">
     {% unless site.theme_mode %}
-      <button type="button" class="mode-toggle btn" aria-label="Switch Mode">
-        <i class="fas fa-adjust"></i>
-      </button>
+      <div class="btn-group dropup">
+        <button
+          type="button"
+          class="btn btn-link nav-link"
+          aria-label="Switch Mode"
+          id="mode-toggle-btn"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="fa-regular fa-sun" data-theme-icon="light"></i>
+          <i class="fa-regular fa-moon" data-theme-icon="dark"></i>
+          <i class="fa-solid fa-display" data-theme-icon="system"></i>
+        </button>
+        <ul class="dropdown-menu rounded-3 mb-1 p-1">
+          <li>
+            <button
+              class="dropdown-item d-flex align-items-center gap-2"
+              type="button"
+              onclick="modeToggle.setMode('light'); syncThemeIcon();"
+            >
+              <i class="fa-regular fa-sun"></i>
+              {{ site.data.locales[lang].theme.light }}
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item d-flex align-items-center gap-2"
+              type="button"
+              onclick="modeToggle.setMode('dark'); syncThemeIcon();"
+            >
+              <i class="fa-regular fa-moon"></i>
+              {{ site.data.locales[lang].theme.dark }}
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item d-flex align-items-center gap-2"
+              type="button"
+              onclick="modeToggle.setMode('system'); syncThemeIcon();"
+            >
+              <i class="fa-solid fa-display"></i>
+              {{ site.data.locales[lang].theme.system }}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <style>
+        /* 토글 버튼 고정 크기 — 아이콘이 바뀌어도 레이아웃 흔들림 없음 */
+        #mode-toggle-btn {
+          width: 1.75rem;
+          height: 1.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          padding: 0;
+          border-radius: 50%;
+          color: var(--sidebar-btn-color);
+          background-color: var(--sidebar-btn-bg);
+          box-shadow: var(--sidebar-border-color) 0 0 0 1px;
+        }
+
+        #mode-toggle-btn [data-theme-icon] {
+          position: absolute;
+          display: none;
+          font-size: 0.85rem;
+        }
+
+        #mode-toggle-btn [data-theme-icon].active-icon {
+          display: inline;
+        }
+
+        /* 드롭다운 메뉴 — 현재 테마(dark/light)에 맞게 배경·글자색 적용 */
+        #mode-toggle-btn + .dropdown-menu {
+          background-color: var(--sidebar-bg);
+          border-color: var(--sidebar-border-color);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          min-width: 8rem;
+        }
+
+        #mode-toggle-btn + .dropdown-menu .dropdown-item {
+          color: var(--sidebar-muted-color);
+          font-size: 0.875rem;
+          border-radius: 0.375rem;
+        }
+
+        #mode-toggle-btn + .dropdown-menu .dropdown-item:hover,
+        #mode-toggle-btn + .dropdown-menu .dropdown-item:focus {
+          background-color: var(--sidebar-hover-bg);
+          color: var(--sidebar-active-color);
+        }
+
+        #mode-toggle-btn + .dropdown-menu .dropdown-item.selected {
+          color: var(--sidebar-active-color);
+          font-weight: 600;
+        }
+
+        #mode-toggle-btn + .dropdown-menu .dropdown-item i {
+          color: var(--sidebar-btn-color);
+          width: 1rem;
+          text-align: center;
+        }
+      </style>
+
+      <script>
+        function syncThemeIcon() {
+          const stored = sessionStorage.getItem('mode');
+          let active;
+          if (stored === 'dark') {
+            active = 'dark';
+          } else if (stored === 'light') {
+            active = 'light';
+          } else {
+            active = 'system';
+          }
+
+          /* 아이콘 전환 */
+          document.querySelectorAll('#mode-toggle-btn [data-theme-icon]').forEach((icon) => {
+            icon.classList.toggle('active-icon', icon.dataset.themeIcon === active);
+          });
+
+          /* 드롭다운 선택 항목 강조 */
+          document.querySelectorAll('#mode-toggle-btn + .dropdown-menu .dropdown-item').forEach((btn) => {
+            const mode = btn.getAttribute('onclick').match(/'(\w+)'/)[1];
+            btn.classList.toggle('selected', mode === active);
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', syncThemeIcon);
+      </script>
 
       {% if site.data.contact.size > 0 %}
         <span class="icon-border"></span>
