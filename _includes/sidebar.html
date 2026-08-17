@@ -92,7 +92,15 @@
       </div>
 
       <style>
-        /* 토글 버튼 고정 크기 — 아이콘이 바뀌어도 레이아웃 흔들림 없음 */
+        /* btn-group을 기존 a 버튼들과 동일한 높이/간격으로 맞춤 */
+        #sidebar .sidebar-bottom .btn-group {
+          width: 1.75rem;
+          height: 1.75rem;
+          margin-bottom: 0.5rem;
+          margin-right: 0.8rem;
+        }
+
+        /* 토글 버튼 — 기존 %button 스타일과 동일하게 맞춤 */
         #mode-toggle-btn {
           width: 1.75rem;
           height: 1.75rem;
@@ -101,16 +109,25 @@
           justify-content: center;
           position: relative;
           padding: 0;
+          border: 0;
           border-radius: 50%;
           color: var(--sidebar-btn-color);
           background-color: var(--sidebar-btn-bg);
           box-shadow: var(--sidebar-border-color) 0 0 0 1px;
+          text-decoration: none;
         }
 
+        #mode-toggle-btn:hover {
+          background-color: var(--sidebar-hover-bg);
+          color: var(--sidebar-btn-color);
+        }
+
+        /* 아이콘 3개를 겹쳐서 배치 — 크기 변화 없이 전환 */
         #mode-toggle-btn [data-theme-icon] {
           position: absolute;
           display: none;
           font-size: 0.85rem;
+          line-height: 1.75rem;
         }
 
         #mode-toggle-btn [data-theme-icon].active-icon {
@@ -175,10 +192,6 @@
 
         document.addEventListener('DOMContentLoaded', syncThemeIcon);
       </script>
-
-      {% if site.data.contact.size > 0 %}
-        <span class="icon-border"></span>
-      {% endif %}
     {% endunless %}
 
     {% for entry in site.data.contact %}
