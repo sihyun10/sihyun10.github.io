@@ -97,7 +97,6 @@
           width: 1.75rem;
           height: 1.75rem;
           margin-bottom: 0.5rem;
-          margin-right: 0.8rem;
         }
 
         /* 토글 버튼 — 기존 %button 스타일과 동일하게 맞춤 */
@@ -192,6 +191,10 @@
 
         document.addEventListener('DOMContentLoaded', syncThemeIcon);
       </script>
+
+      {% if site.data.contact.size > 0 %}
+        <span class="icon-border" style="margin-left: 0.6rem; margin-right: 0.6rem;"></span>
+      {% endif %}
     {% endunless %}
 
     {% for entry in site.data.contact %}
